@@ -11,10 +11,17 @@ import java.util.Scanner;
  */
 public class Colosseum {
     /**
+     * Self-explanatory.
+     */
+    static Exception outOfRange = new Exception("Integer is not in specified range.");
+    /**
      * The maximum number of hit points we will allow a Pokemon to start with.
      */
     static final int MAX_HIT_POINTS = 50;
-
+    /**
+     * The maximum sum of attack and defense levels.
+     */
+    static final int MAX_COMBINED_LEVEL = 50;
     /**
      * The maximum number of rounds we will let the Pokemon battle.
      */
@@ -35,6 +42,30 @@ public class Colosseum {
      * Useful functions: next(), nextInt() .
      */
     static Scanner myScan;
+
+    /**
+     *
+     * @param min min
+     * @param max max
+     * @param errorMessage error message
+     * @return valid int
+     */
+    private static int getIntInput(final int min, final int max, final String errorMessage) {
+        int validInput;
+        while (true) {
+            try {
+                myScan = new Scanner(System.in);
+                validInput = myScan.nextInt();
+                if (validInput < min || validInput > max) {
+                    throw outOfRange;
+                }
+                break;
+            } catch (Exception ex) {
+                System.out.print(errorMessage);
+            }
+        }
+        return validInput;
+    }
 
     /**
      * How we will build our Pokemon to battle.
@@ -73,6 +104,19 @@ public class Colosseum {
      */
     public static Pokemon buildPokemon() {
         Pokemon tempPokemon = new Pokemon();
+        System.out.print("Please name your Pokemon: ");
+        tempPokemon.name = myScan.next();
+        System.out.print("How many hit points will it have? (1-50): ");
+        tempPokemon.hitPoints = getIntInput(1, MAX_HIT_POINTS,
+                "Sorry. Hit points must be between 1 and 50: ");
+        System.out.println("Split fifty points between attack level and defense level");
+        System.out.print("Enter your attack level (1-49): ");
+        tempPokemon.attackLevel = getIntInput(1, MAX_COMBINED_LEVEL,
+                "Sorry. The attack level must be between 1 and 49: ");
+        int maxDefenseLevel = MAX_COMBINED_LEVEL - tempPokemon.attackLevel;
+        System.out.print("Enter your defense level (1-" + maxDefenseLevel + "): ");
+        tempPokemon.defenseLevel = getIntInput(1, maxDefenseLevel,
+                "Sorry. The defense level must be between 1 and " + maxDefenseLevel + ": ");
         return tempPokemon;
     }
 
@@ -90,7 +134,13 @@ public class Colosseum {
      * Implement this function.
      */
     public static void printWhoIsAhead() {
-        System.out.println("Implement me!");
+        if (firstPokemon.hitPoints > secondPokemon.hitPoints) {
+            System.out.println(firstPokemon.name + " is currently ahead!");
+        } else if (secondPokemon.hitPoints > firstPokemon.hitPoints) {
+            System.out.println(secondPokemon.name + " is currently ahead!");
+        } else {
+            System.out.println("The two Pokemon are tied!");
+        }
     }
 
     /**
@@ -101,7 +151,13 @@ public class Colosseum {
      * Write this function.
      */
     public static void determineWinner() {
-        System.out.println("Implement me!");
+        Pokemon winner;
+        if (firstPokemon.hitPoints < 1) {
+            winner = secondPokemon;
+        } else {
+            winner = firstPokemon;
+        }
+        System.out.println(winner.name + " is the winner!");
     }
 
     /**
@@ -113,14 +169,14 @@ public class Colosseum {
         System.out.println("Player 1, build your Pokemon!");
         System.out.println("=================");
         firstPokemon = buildPokemon();
-        firstPokemon.name = "Chuchu";
+        // firstPokemon.name = "Chuchu";
 
         System.out.println("");
 
         System.out.println("Player 2, build your Pokemon!");
         System.out.println("==================");
         secondPokemon = buildPokemon();
-        secondPokemon.name = "Xyz";
+        // secondPokemon.name = "Xyz";
     }
 
     /**
@@ -182,7 +238,7 @@ public class Colosseum {
 
             }
         }
-        System.out.println("");
+        // System.out.println("");
 
         if (!ifWinner) {
             System.out.println("It's a tie!");
